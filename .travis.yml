@@ -13,9 +13,6 @@ env:
 services:
     - elasticsearch
 
-install:
-    - composer require codeclimate/php-test-reporter:"dev-master"
-
 before_script:
     - mkdir -p build/logs
     - if [ $(phpenv version-name -gt 5.2 ) ]; then composer install --dev; fi;
@@ -27,5 +24,5 @@ script:
     - if [ $(phpenv version-name) -lte 5.2 ]; then phpunit; fi;
 
 after_script:
-    - php vendor/bin/coveralls
-    - ./vendor/bin/test-reporter
+    - if [ $(phpenv version-name) -gt 5.2 ]; then php vendor/bin/coveralls; fi;
+    - if [ $(phpenv version-name) -gt 5.2 ]; then ./vendor/bin/test-reporter; fi;
