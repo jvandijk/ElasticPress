@@ -818,6 +818,86 @@ class EP_API {
 		}
 
 		/**
+		 * Simple date params support
+		 *
+		 * @since 1.3
+		 */
+		if (
+			! empty( $args['year'] ) ||
+			! empty( $args['monthnum'] ) ||
+			// @todo add week "w" support
+			// ! empty( $args['w'] ) ||
+			! empty( $args['day'] ) ||
+			! empty( $args['hour'] ) ||
+			! empty( $args['minute'] ) ||
+			! empty( $args['second'] ) ||
+			! empty( $args['m'] ) // yearmonth
+		) {
+			if ( ! empty( $args['year'] ) ) {
+				$year = $args['year'];
+			} else {
+				// because PHP time in current_time is WP 3.9+
+				// and we need a date for mktime to work
+				$year = date( 'Y', current_time( 'timestamp' ) );
+			}
+
+			if ( ! empty( $args['monthnum'] ) ) {
+				$month = $args['monthnum'];
+			} else {
+				$month = 1;
+			}
+
+			// @todo add week "w" support
+
+			if ( ! empty( $args['day'] ) ) {
+				$day = $args['day'];
+			} else {
+				$day = 1;
+			}
+
+			if ( ! empty( $args['hour'] ) ) {
+				$hour = $args['hour'];
+			} else {
+				$hour = 0;
+			}
+
+			if ( ! empty( $args['minute'] ) ) {
+				$minute = $args['minute'];
+			} else {
+				$minute = 0;
+			}
+
+			if ( ! empty( $args['second'] ) ) {
+				$second = $args['second'];
+			} else {
+				$second = 0;
+			}
+
+			// @todo add yearmonth "m" support
+
+			$date = date( 'Y-m-d H:i:s', mktime( $hour, $minute, $second, $month, $day, $year ) );
+
+			if ( is_date( $date ) ) {
+				$filter['and'][] = array(
+					'range' => array(
+						'post_date' => array(
+							'gte' => $date,
+							'lte' => $date
+						)
+					)
+				);
+				// @todo - this is too obtuse. the full year would need checked if only a year was provided, for example. will need more considerations
+
+				$use_filters = true;
+			}
+		}
+
+
+		/**
+		 * @todo full date_query
+		 */
+
+		/**
 		 * 'meta_query' arg support.
 		 *
 		 * Relation supports 'AND' and 'OR'. 'AND' is the default. For each individual query, the
