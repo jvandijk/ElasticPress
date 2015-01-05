@@ -109,6 +109,10 @@ class EP_API {
 
 		if ( ! is_wp_error( $request ) ) {
 
+			if ( 404 === wp_remote_retrieve_response_code( $request ) ) {
+				return null;
+			}
+
 			// Allow for direct response retrieval
 			do_action( 'ep_retrieve_raw_response', $request, $args, $scope );
 

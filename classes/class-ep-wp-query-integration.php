@@ -162,6 +162,11 @@ class EP_WP_Query_Integration {
 
 		$search = ep_search( $formatted_args, $scope );
 
+		// Bad or no response from the Elasticsearch server, let's fallback to MySQL
+		if ( null === $search ) {
+			return $posts;
+		}
+
 		$query->found_posts = $search['found_posts'];
 		$query->max_num_pages = ceil( $search['found_posts'] / $query->get( 'posts_per_page' ) );
 
