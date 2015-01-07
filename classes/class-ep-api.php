@@ -834,62 +834,63 @@ class EP_API {
 			! empty( $args['m'] ) // yearmonth
 		) {
 			if ( ! empty( $args['year'] ) ) {
-				$year = $args['year'];
+				$start_year = $end_year = $args['year'];
 			} else {
-				// because PHP time in current_time is WP 3.9+
-				// and we need a date for mktime to work
-				$year = date( 'Y', current_time( 'timestamp' ) );
+				// because PHP time is only available in current_time in WP 3.9 or greater
+				// and we need a year for mktime to work
+				$start_year = $end_year = date( 'Y', current_time( 'timestamp' ) );
 			}
 
 			if ( ! empty( $args['monthnum'] ) ) {
-				$month = $args['monthnum'];
+				$start_month = $end_month = $args['monthnum'];
 			} else {
-				$month = 1;
+				$start_month = 1;
+				$end_month = 12;
 			}
 
 			// @todo add week "w" support
 
 			if ( ! empty( $args['day'] ) ) {
-				$day = $args['day'];
+				$start_day = $end_day = $args['day'];
 			} else {
-				$day = 1;
+				$start_day = 1;
+				// base end day on max num days in end month, if not provided
+				$end_day = date( 't', strtotime( $start_year . '.' . $end_month ) );
 			}
 
 			if ( ! empty( $args['hour'] ) ) {
-				$hour = $args['hour'];
+				$start_hour = $end_hour = $args['hour'];
 			} else {
-				$hour = 0;
+				$start_hour = $end_hour = 0;
 			}
 
 			if ( ! empty( $args['minute'] ) ) {
-				$minute = $args['minute'];
+				$start_minute = $end_minute = $args['minute'];
 			} else {
-				$minute = 0;
+				$start_minute = $end_minute = 0;
 			}
 
 			if ( ! empty( $args['second'] ) ) {
-				$second = $args['second'];
+				$start_second = $end_second = $args['second'];
 			} else {
-				$second = 0;
+				$start_second = $end_second = 0;
 			}
 
 			// @todo add yearmonth "m" support
 
-			$date = date( 'Y-m-d H:i:s', mktime( $hour, $minute, $second, $month, $day, $year ) );
+			$start_date = date( 'Y-m-d H:i:s', mktime( $start_hour, $start_minute, $start_second, $start_month, $start_day, $start_year ) );
+			$end_date   = date( 'Y-m-d H:i:s', mktime( $end_hour, $end_minute, $end_second, $end_month, $end_day, $end_year ) );
 
-			if ( is_date( $date ) ) {
-				$filter['and'][] = array(
-					'range' => array(
-						'post_date' => array(
-							'gte' => $date,
-							'lte' => $date
-						)
+			$filter['and'][] = array(
+				'range' => array(
+					'post_date' => array(
+						'gte' => $start_date,
+						'lte' => $end_date
 					)
-				);
-				// @todo - this is too obtuse. the full year would need checked if only a year was provided, for example. will need more considerations
+				)
+			);
 
-				$use_filters = true;
-			}
+			$use_filters = true;
 		}
 
 
