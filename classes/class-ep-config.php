@@ -60,6 +60,17 @@ class EP_Config {
 	}
 
 	/**
+     * Returns the index url given an index name. Defaults to current index
+     *
+     * @param string|array $index
+     * @since 0.9
+     * @return string
+     */
+    public function get_index_headers( $index = null ) {
+        return array('http_auth' => EP_USER .':'. EP_PASSWORD);
+    }
+
+	/**
 	 * Returns indexable post types for the current site
 	 *
 	 * @since 0.9
@@ -106,6 +117,10 @@ EP_Config::factory();
 
 function ep_get_index_url( $index = null ) {
 	return EP_Config::factory()->get_index_url( $index );
+}
+
+function ep_get_index_headers() {
+    return EP_Config::factory()->get_index_headers();
 }
 
 function ep_get_index_name( $blog_id = null ) {
